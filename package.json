@@ -7,6 +7,7 @@
   "scripts": {
     "serve": "vite --port 8080",
     "dev": "vite --port 8080",
+    "dev:host": "vite --host --port 8080",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint . --ext .vue,.js,.jsx,.ts,.tsx --ignore-path .gitignore",
