@@ -24,6 +24,7 @@ module.exports = {
 
   extends: [
     'eslint:recommended',
+    'airbnb-base',
     'plugin:vue/vue3-essential',
     'prettier',
     'plugin:@typescript-eslint/eslint-recommended',

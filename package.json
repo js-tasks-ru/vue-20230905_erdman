@@ -7,6 +7,7 @@
   "scripts": {
     "serve": "vite --port 8080",
     "dev": "vite --port 8080",
+    "dev:host": "vite --host --port 8080",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint . --ext .vue,.js,.jsx,.ts,.tsx --ignore-path .gitignore",
@@ -51,7 +52,9 @@
     "@vue/vue3-jest": "^29.2.3",
     "babel-jest": "^29.5.0",
     "eslint": "^8.38.0",
+    "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-import": "^2.28.1",
     "eslint-plugin-vue": "^9.11.0",
     "flush-promises": "^1.0.2",
     "jest": "^29.5.0",
