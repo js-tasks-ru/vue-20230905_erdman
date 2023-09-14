@@ -17,12 +17,12 @@ export default defineComponent({
 
   template: `
     <ul class="agenda">
-      <li class="agenda__item">
-        <MeetupAgendaItem
-          v-for="item in agenda"
-          :key="item.id"
-          :agendaItem="item"
-        />
+      <li
+        v-for="item in agenda"
+        :key="item.id"
+        class="agenda__item"
+      >
+        <MeetupAgendaItem :agendaItem="item" />
       </li>
     </ul>`,
 });
