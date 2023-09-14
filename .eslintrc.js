@@ -44,6 +44,7 @@ module.exports = {
   },
 
   rules: {
+    'import/extensions': 'ignorePackages', // Для совместимости с заданиями, отличается от правила airbnb
     // Basic
     'no-unused-vars': 'off', // For task start code
     '@typescript-eslint/no-unused-vars': 'off', // For task start code
