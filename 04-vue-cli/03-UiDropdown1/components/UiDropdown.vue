@@ -1,20 +1,38 @@
 <template>
-  <div class="dropdown dropdown_opened">
-    <button type="button" class="dropdown__toggle dropdown__toggle_icon">
-      <UiIcon icon="tv" class="dropdown__icon" />
-      <span>Title</span>
+  <div class="dropdown" :class="{ dropdown_opened: isOpen }">
+    <button
+      type="button"
+      class="dropdown__toggle"
+      :class="{ dropdown__toggle_icon: hasIcons }"
+      @click="handleToggleClick"
+    >
+      <UiIcon v-if="isMenuSelected && selectedOption.icon" :icon="selectedOption.icon" class="dropdown__icon" />
+      <span>{{ isMenuSelected ? selectedOption.text : title }}</span>
     </button>
 
-    <div class="dropdown__menu" role="listbox">
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
-        <UiIcon icon="tv" class="dropdown__icon" />
-        Option 1
-      </button>
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
-        <UiIcon icon="tv" class="dropdown__icon" />
-        Option 2
+    <div v-show="isOpen" class="dropdown__menu" role="listbox">
+      <button
+        v-for="option in options"
+        :key="option.value"
+        class="dropdown__item"
+        :class="{ dropdown__item_icon: hasIcons }"
+        role="option"
+        :aria-selected="isMenuSelected && option.value === selectedOption.value"
+        type="button"
+        @click="handleOptionClick(option.value)"
+      >
+        <UiIcon v-if="option.icon" :icon="option.icon" class="dropdown__icon" />
+        {{ option.text }}
       </button>
     </div>
+
+    <label v-show="false">
+      <select :value="modelValue" @change="emitUpdate($event.target.value)">
+        <option v-for="option in options" :key="option.value" :value="option.value">
+          {{ option.text }}
+        </option>
+      </select>
+    </label>
   </div>
 </template>
 
@@ -25,6 +43,66 @@ export default {
   name: 'UiDropdown',
 
   components: { UiIcon },
+
+  emits: ['update:modelValue'],
+
+  props: {
+    options: {
+      type: Array,
+      required: true,
+    },
+    modelValue: {
+      type: [Number, String],
+      default: null,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+  },
+
+  data() {
+    return {
+      isOpen: false,
+    };
+  },
+
+  methods: {
+    toggleMenu() {
+      this.isOpen = !this.isOpen;
+    },
+
+    closeMenu() {
+      this.isOpen = false;
+    },
+
+    handleToggleClick() {
+      this.toggleMenu();
+    },
+
+    handleOptionClick(newValue) {
+      this.emitUpdate(newValue);
+      this.closeMenu();
+    },
+
+    emitUpdate(newValue) {
+      this.$emit('update:modelValue', newValue);
+    },
+  },
+
+  computed: {
+    selectedOption() {
+      return this.options.find((option) => option.value === this.modelValue);
+    },
+
+    isMenuSelected() {
+      return this.modelValue !== null && this.selectedOption !== undefined;
+    },
+
+    hasIcons() {
+      return Boolean(this.options.find((option) => option.icon !== undefined));
+    },
+  },
 };
 </script>
 

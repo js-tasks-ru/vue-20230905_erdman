@@ -26,6 +26,7 @@ module.exports = {
     'eslint:recommended',
     'airbnb-base',
     'plugin:vue/vue3-essential',
+    '@vue/eslint-config-airbnb',
     'prettier',
     'plugin:@typescript-eslint/eslint-recommended',
   ],
@@ -44,7 +45,7 @@ module.exports = {
   },
 
   rules: {
-    'import/extensions': 'ignorePackages', // Для совместимости с заданиями, отличается от правила airbnb
+    'import/extensions': ['warn', 'always', { ignorePackages: true }], // Для совместимости с заданиями, отличается от правила airbnb
     // Basic
     'no-unused-vars': 'off', // For task start code
     '@typescript-eslint/no-unused-vars': 'off', // For task start code
