@@ -33,14 +33,16 @@
         <div class="form__buttons">
           <button type="submit" class="button button_primary">Зарегистрироваться</button>
         </div>
-        <div class="form__append">Уже есть аккаунт? <a href="/login" class="link">Войдите</a></div>
+        <div class="form__append">
+          Уже есть аккаунт? <RouterLink :to="{ name: 'login' }" class="link">Войдите</RouterLink>
+        </div>
       </form>
     </UiContainer>
   </div>
 </template>
 
 <script>
-import UiFormGroup from '../components/UiFormGroup.vue';
+import UiFormGroup from '../../../04-vue-cli/01-UiFormGroup1/components/UiFormGroup.vue';
 import UiContainer from '../components/UiContainer.vue';
 
 export default {
@@ -53,7 +55,7 @@ export default {
 
   methods: {
     handleSubmit() {
-      // Требуется обработать сабмит формы
+      this.$router.push({ name: 'login' });
     },
   },
 };
