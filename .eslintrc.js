@@ -46,6 +46,9 @@ module.exports = {
 
   rules: {
     'import/extensions': ['warn', 'always', { ignorePackages: true }], // Для совместимости с заданиями, отличается от правила airbnb
+    'import/prefer-default-export': 'off',
+    'vuejs-accessibility/form-control-has-label': 'warn',
+
     // Basic
     'no-unused-vars': 'off', // For task start code
     '@typescript-eslint/no-unused-vars': 'off', // For task start code
