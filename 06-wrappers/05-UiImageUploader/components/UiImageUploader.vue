@@ -1,8 +1,20 @@
 <template>
   <div class="image-uploader">
-    <label class="image-uploader__preview image-uploader__preview-loading" style="--bg-url: url('/link.jpeg')">
-      <span class="image-uploader__text">Загрузить изображение</span>
-      <input type="file" accept="image/*" class="image-uploader__input" />
+    <label
+      class="image-uploader__preview"
+      :class="{ 'image-uploader__preview-loading': state === 'uploading' }"
+      :style="previewStyle"
+    >
+      <span class="image-uploader__text">{{ uploaderText }}</span>
+      <input
+        ref="input"
+        type="file"
+        accept="image/*"
+        v-bind="$attrs"
+        @click="handleClick"
+        @change="handleChange"
+        class="image-uploader__input"
+      />
     </label>
   </div>
 </template>
@@ -10,6 +22,122 @@
 <script>
 export default {
   name: 'UiImageUploader',
+
+  inheritAttrs: false,
+
+  props: {
+    preview: {
+      type: String,
+      default: null,
+    },
+
+    uploader: {
+      type: Function,
+      default: null,
+    },
+  },
+
+  emits: ['select', 'upload', 'error', 'remove'],
+
+  data() {
+    return {
+      isUploading: false,
+      selectedFile: null,
+      previewImageUrl: this.preview,
+    };
+  },
+
+  computed: {
+    state() {
+      if (this.isUploading) return 'uploading';
+      if (this.previewImageUrl) return 'filled';
+
+      return 'empty';
+    },
+
+    previewStyle() {
+      const style = {};
+      if (this.previewImageUrl) {
+        style['--bg-url'] = `url('${this.previewImageUrl}')`;
+      }
+
+      return style;
+    },
+
+    uploaderText() {
+      const statesText = {
+        empty: 'Загрузить изображение',
+        uploading: 'Загрузка...',
+        filled: 'Удалить изображение',
+      };
+
+      return statesText[this.state];
+    },
+  },
+
+  watch: {
+    selectedFile() {
+      this.updatePreviewImageUrl();
+    },
+  },
+
+  methods: {
+    handleClick(event) {
+      // Предотвращение запуска диалогового окна выбора файла
+      if (this.state !== 'empty') event.preventDefault();
+
+      if (this.state === 'filled') this.removeImage();
+    },
+
+    handleChange(event) {
+      const selectedFile = event.target.files[0];
+      this.selectedFile = selectedFile;
+
+      if (this.uploader) this.uploadImage();
+
+      this.$emit('select', selectedFile);
+    },
+
+    async uploadImage() {
+      this.isUploading = true;
+
+      try {
+        const response = await this.uploader(this.selectedFile);
+
+        this.$emit('upload', response);
+      } catch (error) {
+        this.resetSelectedFile();
+
+        this.$emit('error', error);
+      } finally {
+        this.isUploading = false;
+      }
+    },
+
+    removeImage() {
+      this.resetSelectedFile();
+
+      this.$emit('remove');
+    },
+
+    updatePreviewImageUrl() {
+      // Рекомендовано очищать предыдущий URL.createObjectURL
+      if (this.previewImageUrl && typeof this.previewImageUrl === 'object') {
+        URL.revokeObjectURL(this.selectedURL);
+      }
+
+      if (this.selectedFile) {
+        this.previewImageUrl = URL.createObjectURL(this.selectedFile);
+      } else {
+        this.previewImageUrl = '';
+      }
+    },
+
+    resetSelectedFile() {
+      this.selectedFile = false;
+      this.$refs.input.value = '';
+    },
+  },
 };
 </script>
 
