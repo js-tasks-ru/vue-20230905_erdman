@@ -1,17 +1,27 @@
 <template>
-  <div class="input-group" :class="getRootElementClasses()">
+  <div
+    class="input-group"
+    :class="{
+      'input-group_icon': $slots['left-icon'] || $slots['right-icon'],
+      'input-group_icon-left': $slots['left-icon'],
+      'input-group_icon-right': $slots['right-icon'],
+    }"
+  >
     <div v-if="$slots['left-icon']" class="input-group__icon">
       <slot name="left-icon" />
     </div>
 
     <component
-      :is="tag"
+      :is="multiline ? 'textarea' : 'input'"
       ref="input"
       v-bind="$attrs"
       :value="modelValue"
-      @[eventName]="emitValue"
       class="form-control"
-      :class="{ 'form-control_sm': small, 'form-control_rounded': rounded }"
+      :class="{
+        'form-control_sm': small,
+        'form-control_rounded': rounded,
+      }"
+      @[eventName]="emitValue"
     />
 
     <div v-if="$slots['right-icon']" class="input-group__icon">
@@ -37,35 +47,24 @@ export default {
     },
 
     modelModifiers: {
-      default: () => ({}),
+      type: Object,
+      default: () => ({
+        lazy: false,
+      }),
     },
   },
 
-  emits: {
-    'update:modelValue': null,
-  },
+  emits: ['update:modelValue'],
 
   expose: ['focus'],
 
   computed: {
-    tag() {
-      return this.multiline ? 'textarea' : 'input';
-    },
-
     eventName() {
       return this.modelModifiers.lazy ? 'change' : 'input';
     },
   },
 
   methods: {
-    getRootElementClasses() {
-      return {
-        'input-group_icon': Boolean(this.$slots['left-icon']) || Boolean(this.$slots['right-icon']),
-        'input-group_icon-left': Boolean(this.$slots['left-icon']),
-        'input-group_icon-right': Boolean(this.$slots['right-icon']),
-      };
-    },
-
     emitValue(event) {
       this.$emit('update:modelValue', event.target.value);
     },

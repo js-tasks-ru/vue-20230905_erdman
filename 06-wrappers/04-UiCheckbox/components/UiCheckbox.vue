@@ -19,9 +19,7 @@ export default {
     },
   },
 
-  emits: {
-    'update:modelValue': null,
-  },
+  emits: ['update:modelValue'],
 
   computed: {
     modelProxy: {

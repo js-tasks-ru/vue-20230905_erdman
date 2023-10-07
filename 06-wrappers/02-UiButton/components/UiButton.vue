@@ -1,5 +1,13 @@
 <template>
-  <component :is="tag" class="button" :class="buttonClasses" v-bind="attrType">
+  <component
+    :is="tag"
+    class="button"
+    :class="buttonClasses"
+    v-bind="{
+      type: tag === 'button' ? 'button' : null,
+      ...$attrs,
+    }"
+  >
     <slot />
   </component>
 </template>
@@ -19,6 +27,8 @@ const BUTTON_VARIANTS = {
 
 export default {
   name: 'UiButton',
+
+  inheritAttrs: false,
 
   props: {
     tag: {
@@ -42,14 +52,6 @@ export default {
   computed: {
     buttonClasses() {
       return [BUTTON_VARIANTS[this.variant].class, { button_block: this.block }];
-    },
-
-    attrType() {
-      if (this.tag === 'button' && !this.$attrs.type) {
-        return { type: 'button' };
-      }
-
-      return {};
     },
   },
 };

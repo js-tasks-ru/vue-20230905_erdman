@@ -2,8 +2,12 @@
   <div class="image-uploader">
     <label
       class="image-uploader__preview"
-      :class="{ 'image-uploader__preview-loading': state === 'uploading' }"
-      :style="previewStyle"
+      :class="{
+        'image-uploader__preview-loading': state === 'uploading',
+      }"
+      :style="{
+        '--bg-url': previewImageUrl ? `url('${previewImageUrl}')` : null,
+      }"
     >
       <span class="image-uploader__text">{{ uploaderText }}</span>
       <input
@@ -20,6 +24,7 @@
 </template>
 
 <script>
+// previewStyle
 export default {
   name: 'UiImageUploader',
 
@@ -53,15 +58,6 @@ export default {
       if (this.previewImageUrl) return 'filled';
 
       return 'empty';
-    },
-
-    previewStyle() {
-      const style = {};
-      if (this.previewImageUrl) {
-        style['--bg-url'] = `url('${this.previewImageUrl}')`;
-      }
-
-      return style;
     },
 
     uploaderText() {
