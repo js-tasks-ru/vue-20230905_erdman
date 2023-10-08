@@ -1,5 +1,5 @@
 <template>
-  <UiInput ref="inputComponent" v-model="modelProxy" :type="type" :step="step">
+  <UiInput :model-value="formattedDate" :type="type" :step="step" @input="handleInput">
     <template v-for="slotName in Object.keys($slots)" #[slotName]>
       <slot :name="slotName" />
     </template>
@@ -62,15 +62,11 @@ export default {
 
       return '';
     },
+  },
 
-    modelProxy: {
-      get() {
-        return this.formattedDate;
-      },
-
-      set(event) {
-        this.$emit('update:modelValue', this.$refs.inputComponent.$refs.input?.valueAsNumber);
-      },
+  methods: {
+    handleInput(event) {
+      this.$emit('update:modelValue', event.target.valueAsNumber);
     },
   },
 };
