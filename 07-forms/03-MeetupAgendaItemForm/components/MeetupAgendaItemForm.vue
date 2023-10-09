@@ -1,37 +1,42 @@
 <template>
   <fieldset class="agenda-item-form">
-    <button type="button" class="agenda-item-form__remove-button">
+    <button type="button" class="agenda-item-form__remove-button" @click="handleRemove">
       <UiIcon icon="trash" />
     </button>
 
     <UiFormGroup>
-      <UiDropdown title="Тип" :options="$options.agendaItemTypeOptions" name="type" />
+      <UiDropdown v-model="localAgendaItem.type" title="Тип" :options="$options.agendaItemTypeOptions" name="type" />
     </UiFormGroup>
 
     <div class="agenda-item-form__row">
       <div class="agenda-item-form__col">
         <UiFormGroup label="Начало">
-          <UiInput type="time" placeholder="00:00" name="startsAt" />
+          <UiInput v-model="localAgendaItem.startsAt" type="time" placeholder="00:00" name="startsAt" />
         </UiFormGroup>
       </div>
       <div class="agenda-item-form__col">
         <UiFormGroup label="Окончание">
-          <UiInput type="time" placeholder="00:00" name="endsAt" />
+          <UiInput v-model="localAgendaItem.endsAt" type="time" placeholder="00:00" name="endsAt" />
         </UiFormGroup>
       </div>
     </div>
 
-    <UiFormGroup label="Тема">
-      <UiInput name="title" />
+    <UiFormGroup :label="titleText">
+      <UiInput v-model="localAgendaItem.title" name="title" />
     </UiFormGroup>
-    <UiFormGroup label="Докладчик">
-      <UiInput name="speaker" />
+    <UiFormGroup v-if="type === 'talk'" label="Докладчик">
+      <UiInput v-model="localAgendaItem.speaker" name="speaker" />
     </UiFormGroup>
-    <UiFormGroup label="Описание">
-      <UiInput multiline name="description" />
+    <UiFormGroup v-if="type === 'talk' || type === 'other'" label="Описание">
+      <UiInput v-model="localAgendaItem.description" multiline name="description" />
     </UiFormGroup>
-    <UiFormGroup label="Язык">
-      <UiDropdown title="Язык" :options="$options.talkLanguageOptions" name="language" />
+    <UiFormGroup v-if="type === 'talk'" label="Язык">
+      <UiDropdown
+        v-model="localAgendaItem.language"
+        title="Язык"
+        :options="$options.talkLanguageOptions"
+        name="language"
+      />
     </UiFormGroup>
   </fieldset>
 </template>
@@ -76,6 +81,28 @@ const talkLanguageOptions = [
   { value: 'EN', text: 'EN' },
 ];
 
+// 5 -> '05'
+function toLeadingZero(num) {
+  return num / 10 < 1 ? `0${num}` : num;
+}
+
+// 10:05 -> 605
+function convertTimeToNumber(time) {
+  const timeArr = time.split(':');
+
+  return Number(timeArr[0]) * 60 + Number(timeArr[1]);
+}
+
+// 605 -> 10:05
+function convertNumberToTime(initNum) {
+  const num = initNum >= 0 ? initNum : 1440 + initNum;
+
+  const hour = toLeadingZero(Math.trunc(num / 60) % 24);
+  const min = toLeadingZero(num % 60);
+
+  return `${hour}:${min}`;
+}
+
 export default {
   name: 'MeetupAgendaItemForm',
 
@@ -88,6 +115,50 @@ export default {
     agendaItem: {
       type: Object,
       required: true,
+    },
+  },
+
+  emits: ['update:agendaItem', 'remove'],
+
+  data() {
+    return {
+      localAgendaItem: { ...this.agendaItem },
+    };
+  },
+
+  computed: {
+    type() {
+      return this.localAgendaItem.type;
+    },
+
+    titleText() {
+      if (this.type === 'talk') return 'Тема';
+      if (this.type === 'other') return 'Заголовок';
+
+      return 'Нестандартный текст (необязательно)';
+    },
+  },
+
+  watch: {
+    'localAgendaItem.startsAt': function (newStartsAt, oldStartsAt) {
+      // Изменение времени окончания митапа на такую же величину, что и время начала митапа
+      const startsAtDifference = convertTimeToNumber(newStartsAt) - convertTimeToNumber(oldStartsAt);
+      const newEndsAtNum = startsAtDifference + convertTimeToNumber(this.localAgendaItem.endsAt);
+
+      this.localAgendaItem.endsAt = convertNumberToTime(newEndsAtNum);
+    },
+
+    localAgendaItem: {
+      handler(updatedAgendaItem) {
+        this.$emit('update:agendaItem', { ...updatedAgendaItem });
+      },
+      deep: true,
+    },
+  },
+
+  methods: {
+    handleRemove() {
+      this.$emit('remove');
     },
   },
 };
