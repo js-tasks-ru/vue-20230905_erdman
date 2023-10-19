@@ -1,5 +1,5 @@
 <script>
-import { h, isVNode } from 'vue';
+import { isVNode } from 'vue';
 
 export default {
   name: 'VNode',
