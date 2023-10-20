@@ -10,7 +10,7 @@ export default {
 
   data() {
     return {
-      panes: this.$slots.default?.() ?? [],
+      panes: (this.$slots.default?.() ?? []).map((vnode) => ({ content: vnode, id: Math.random() })),
     };
   },
 
@@ -41,9 +41,9 @@ export default {
   render() {
     return (
       <div class="panes">
-        {this.panes.map((paneContentVNode, i) => (
-          <div class="pane">
-            <div class="pane__content">{paneContentVNode}</div>
+        {this.panes.map(({ content, id }, i) => (
+          <div class="pane" key={id}>
+            <div class="pane__content">{content}</div>
             <div class="pane__controls">
               <UiButton
                 class={{ 'pane__disabled-button': i === 0 }}
