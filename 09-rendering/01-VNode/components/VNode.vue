@@ -7,9 +7,13 @@ export default {
   props: {
     vnode: {
       type: [Object, Array],
-      require: true,
+      required: true,
       validator: (value) => (Array.isArray(value) ? value.every((item) => isVNode(item)) : isVNode(value)),
     },
+  },
+
+  render() {
+    return this.vnode;
   },
 };
 </script>
