@@ -1,14 +1,42 @@
 <template>
-  <button class="button-group__button button-group__button_active" type="button" aria-selected="false">Button</button>
+  <button
+    class="button-group__button"
+    :class="{ 'button-group__button_active': isActive }"
+    type="button"
+    aria-selected="false"
+    @click="select"
+  >
+    <slot />
+  </button>
 </template>
 
 <script>
+import { warn } from 'vue';
+
 export default {
   name: 'UiButtonGroupItem',
 
   props: {
     value: {
       required: true,
+    },
+  },
+
+  computed: {
+    isActive() {
+      return this.value === this.$parent.modelValue;
+    }
+  },
+
+  created() {
+    if (this.$parent.$options.name !== 'UiButtonGroup') {
+      warn('Parent of UiButtonGroupItem must be UiButtonGroup');
+    }
+  },
+
+  methods: {
+    select() {
+      this.$parent.setModelValue(this.value);
     },
   },
 };
