@@ -1,14 +1,36 @@
 <template>
-  <button class="button-group__button button-group__button_active" type="button" aria-selected="false">Button</button>
+  <button
+    class="button-group__button"
+    :class="{ 'button-group__button_active': isActive }"
+    type="button"
+    aria-selected="false"
+    @click="handleSelect"
+  >
+    <slot />
+  </button>
 </template>
 
 <script>
 export default {
   name: 'UiButtonGroupItem',
 
+  inject: ['selectedItem', 'selectItem'],
+
   props: {
     value: {
       required: true,
+    },
+  },
+
+  computed: {
+    isActive() {
+      return this.value === this.selectedItem;
+    }
+  },
+
+  methods: {
+    handleSelect() {
+      this.selectItem(this.value);
     },
   },
 };
